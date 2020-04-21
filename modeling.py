@@ -862,6 +862,8 @@ def transformer_model(input_tensor,
           attention_output = dropout(attention_output, hidden_dropout_prob)
           attention_output = layer_norm(attention_output + layer_input)
 
+
+
       # The activation is only applied to the "intermediate" hidden layer.
       with tf.variable_scope("intermediate"):
         intermediate_output = tf.layers.dense(
@@ -869,6 +871,9 @@ def transformer_model(input_tensor,
             intermediate_size,
             activation=intermediate_act_fn,
             kernel_initializer=create_initializer(initializer_range))
+
+      tf.logging.info("!!!!!!!!!!!!!!!!@@@@@@@@@@@@@@@@@@@!!!!!!!!!!!!!!!!@@@@@@@@@@@@@@@@@@@ Including extra intermediate dense layer !!!!!!!!!!!!!!!!@@@@@@@@@@@@@@@@@@@!!!!!!!!!!!!!!!!@@@@@@@@@@@@@@@@@@@")
+      tf.logging.info(tf.shape(intermediate_output))
 
       # Down-project back to `hidden_size` then add the residual.
       with tf.variable_scope("output"):
