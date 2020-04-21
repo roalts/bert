@@ -866,19 +866,29 @@ def transformer_model(input_tensor,
 
       # The activation is only applied to the "intermediate" hidden layer.
       with tf.variable_scope("intermediate"):
-        intermediate_output = tf.layers.dense(
+        intermediate_output_first = tf.layers.dense(
             attention_output,
             intermediate_size,
             activation=intermediate_act_fn,
             kernel_initializer=create_initializer(initializer_range))
 
       tf.logging.info("!!!!!!!!!!!!!!!!@@@@@@@@@@@@@@@@@@@!!!!!!!!!!!!!!!!@@@@@@@@@@@@@@@@@@@ Including extra intermediate dense layer !!!!!!!!!!!!!!!!@@@@@@@@@@@@@@@@@@@!!!!!!!!!!!!!!!!@@@@@@@@@@@@@@@@@@@")
-      tf.logging.info(tf.shape(intermediate_output))
+      tf.logging.info(tf.shape(intermediate_output_first))
+      tf.logging.info("!!!!!!!!!!!!!!!! Including extra intermediate dense layer !!!!!!!!!!!!!!")
+      with tf.variable_scope("intermediate2"):
+        intermediate_output_second = tf.layers.dense(
+            intermediate_output_first,
+            intermediate_size,
+            activation=intermediate_act_fn,
+            kernel_initializer=create_initializer(initializer_range))
 
+      tf.logging.info(
+          "!!!!!!!!!!!!!!!!@@@@@@@@@@@@@@@@@@@!!!!!!!!!!!!!!!!@@@@@@@@@@@@@@@@@@@ Including extra intermediate dense layer !!!!!!!!!!!!!!!!@@@@@@@@@@@@@@@@@@@!!!!!!!!!!!!!!!!@@@@@@@@@@@@@@@@@@@")
+      tf.logging.info(tf.shape(intermediate_output_second))
       # Down-project back to `hidden_size` then add the residual.
       with tf.variable_scope("output"):
         layer_output = tf.layers.dense(
-            intermediate_output,
+            intermediate_output_second,
             hidden_size,
             kernel_initializer=create_initializer(initializer_range))
         layer_output = dropout(layer_output, hidden_dropout_prob)
